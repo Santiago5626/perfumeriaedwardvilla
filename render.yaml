@@ -8,9 +8,9 @@ databases:
 services:
   - type: web
     name: perfumeria-app
-    env: php
-    buildCommand: "./bin/render-build.sh"
-    startCommand: "heroku-php-apache2 public/"
+    runtime: docker
+
+
     envVars:
       - key: APP_KEY
         generateValue: true
