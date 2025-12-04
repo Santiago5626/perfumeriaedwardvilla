@@ -1,0 +1,370 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use MercadoPago\SDK;
+use MercadoPago\Preference;
+use MercadoPago\Item;
+
+class CheckoutController extends Controller
+{
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the shipping information form
+     */
+    public function shipping()
+    {
+        // Verificar si hay items en el carrito
+        $cartItems = Cart::where('user_id', Auth::id())
+            ->with('product')
+            ->get();
+        
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')
+                           ->with('error', 'Tu carrito está vacío. Agrega algunos productos antes de proceder al checkout.');
+        }
+
+        // Obtener datos de envío guardados en sesión
+        $shippingData = session('checkout.shipping', []);
+
+        return view('checkout.shipping', compact('shippingData'));
+    }
+
+    /**
+     * Process shipping information and redirect to payment
+     */
+    public function processShipping(Request $request)
+    {
+        // Validar los datos del formulario
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'country' => 'required|string|max:2',
+            'postal_code' => 'nullable|string|max:10',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        // Guardar información de envío en sesión con nombres de ciudad y estado
+        $shippingData = $validated;
+        
+        // Obtener nombres de ciudad y estado desde la API
+        try {
+            // Obtener nombre del departamento
+            $departmentResponse = file_get_contents("https://api-colombia.com/api/v1/Department/{$validated['state']}");
+            $department = json_decode($departmentResponse, true);
+            $shippingData['state_name'] = $department['name'] ?? $validated['state'];
+            
+            // Obtener nombre de la ciudad
+            $cityResponse = file_get_contents("https://api-colombia.com/api/v1/City/{$validated['city']}");
+            $city = json_decode($cityResponse, true);
+            $shippingData['city_name'] = $city['name'] ?? $validated['city'];
+        } catch (Exception $e) {
+            // Si falla la API, usar los valores originales
+            $shippingData['state_name'] = $validated['state'];
+            $shippingData['city_name'] = $validated['city'];
+        }
+        
+        session(['checkout.shipping' => $shippingData]);
+
+        return redirect()->route('checkout.confirm');
+    }
+
+    /**
+     * Show the confirmation page
+     */
+    public function showConfirm()
+    {
+        if (!session('checkout.shipping')) {
+            return redirect()->route('checkout.shipping')
+                           ->with('error', 'Por favor, completa la información de envío primero.');
+        }
+
+        $cartItems = Cart::where('user_id', Auth::id())
+            ->with('product.offers')
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart.index')
+                           ->with('error', 'Tu carrito está vacío.');
+        }
+
+        // Calcular totales
+        $subtotal = $cartItems->sum(function($item) {
+            return $item->product->final_price * $item->quantity;
+        });
+
+        // Determinar costo de envío basado en ubicación
+        $shippingData = session('checkout.shipping');
+        $cityName = strtolower(trim($shippingData['city_name'] ?? $shippingData['city']));
+        $stateName = strtolower(trim($shippingData['state_name'] ?? $shippingData['state']));
+        
+        $shippingCost = 17000; // Costo base de envío
+
+        // Envío gratis para La Paz, Cesar o cualquier municipio de La Guajira
+        if (($cityName === 'la paz' && $stateName === 'cesar') || 
+            $stateName === 'la guajira') {
+            $shippingCost = 0;
+        }
+
+        $total = $subtotal + $shippingCost;
+
+        return view('checkout.confirm', compact('cartItems', 'subtotal', 'shippingCost', 'total'));
+    }
+
+    public function process(Request $request)
+    {
+        // Verificar si existe información de envío
+        if (!session('checkout.shipping')) {
+            return redirect()->route('checkout.shipping')
+                           ->with('error', 'Por favor, completa la información de envío primero.');
+        }
+
+        $validated = session('checkout.shipping');
+
+        try {
+            // Iniciar transacción
+            DB::beginTransaction();
+
+            // Obtener items del carrito
+            $cartItems = Cart::where('user_id', Auth::id())
+                ->with('product.offers')
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                return redirect()->route('cart.index')
+                               ->with('error', 'Tu carrito está vacío.');
+            }
+
+            // Calcular totales
+            $subtotal = $cartItems->sum(function($item) {
+                return $item->product->final_price * $item->quantity;
+            });
+
+            // Determinar costo de envío basado en ubicación
+            $shipping = 17000; // Costo base de envío
+            $cityName = strtolower(trim($validated['city']));
+            $stateName = strtolower(trim($validated['state']));
+
+            // Envío gratis para La Paz, Cesar o cualquier municipio de La Guajira
+            if (($cityName === 'la paz' && $stateName === 'cesar') || 
+                $stateName === 'la guajira') {
+                $shipping = 0;
+            }
+
+            $total = $subtotal + $shipping;
+
+            // Crear la orden
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'status' => 'pending',
+                'subtotal' => $subtotal,
+                'shipping' => $shipping,
+                'total' => $total,
+                'first_name' => $validated['first_name'],
+                'last_name' => '', // Ya no se usa apellido
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'address' => $validated['address'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
+                'country' => $validated['country'],
+                'postal_code' => $validated['postal_code'],
+                'notes' => $validated['notes'],
+            ]);
+
+            // Crear los items de la orden
+            foreach ($cartItems as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                    'final_price' => $item->product->final_price,
+                ]);
+            }
+
+            // Guardar la orden en la sesión para el checkout
+            Session::put('checkout_order_id', $order->id);
+
+            // Commit la transacción
+            DB::commit();
+
+            // Redirigir a la pasarela de pago de Wompi
+            return redirect()->route('checkout.payment');
+
+        } catch (\Exception $e) {
+            // Rollback en caso de error
+            DB::rollBack();
+
+            return redirect()->back()
+                           ->with('error', 'Hubo un error al procesar tu orden. Por favor, intenta nuevamente.')
+                           ->withInput();
+        }
+    }
+
+    /**
+     * Show the Mercado Pago payment form
+     */
+    public function payment()
+    {
+        // Verificar si hay una orden en proceso
+        if (!Session::has('checkout_order_id')) {
+            return redirect()->route('cart.index')
+                           ->with('error', 'No hay una orden en proceso. Por favor, comienza el checkout nuevamente.');
+        }
+
+        $order = Order::with('items.product')->findOrFail(Session::get('checkout_order_id'));
+
+        try {
+            // Configurar SDK de Mercado Pago
+            SDK::setAccessToken(config('services.mercadopago.access_token'));
+
+            // Crear preferencia de pago
+            $preference = new Preference();
+
+            // Agregar items
+            $items = [];
+            foreach ($order->items as $orderItem) {
+                $item = new Item();
+                $item->title = $orderItem->product->name;
+                $item->quantity = $orderItem->quantity;
+                $item->unit_price = floatval($orderItem->final_price);
+                $items[] = $item;
+            }
+
+            // Agregar envío como un item si tiene costo
+            if ($order->shipping > 0) {
+                $shippingItem = new Item();
+                $shippingItem->title = 'Envío';
+                $shippingItem->quantity = 1;
+                $shippingItem->unit_price = floatval($order->shipping);
+                $items[] = $shippingItem;
+            }
+
+            $preference->items = $items;
+
+            // Configurar URLs de retorno
+            $preference->back_urls = [
+                'success' => route('checkout.success'),
+                'failure' => route('cart.index'),
+                'pending' => route('checkout.success')
+            ];
+            $preference->auto_return = 'approved';
+
+            // Configurar referencia externa (ID de la orden)
+            $preference->external_reference = strval($order->id);
+
+            // Información del pagador
+            $preference->payer = [
+                'name' => $order->first_name,
+                'email' => $order->email,
+                'phone' => [
+                    'area_code' => '',
+                    'number' => $order->phone
+                ]
+            ];
+
+            // Guardar preferencia
+            $preference->save();
+
+            // Guardar el ID de preferencia en la orden
+            $order->payment_id = $preference->id;
+            $order->save();
+
+            return view('checkout.payment', compact('order', 'preference'));
+
+        } catch (\Exception $e) {
+            return redirect()->route('cart.index')
+                           ->with('error', 'Error al crear la preferencia de pago: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show the success page after payment
+     */
+    public function success()
+    {
+        // Verificar si hay una orden completada
+        if (!Session::has('checkout_order_id')) {
+            return redirect()->route('home')
+                           ->with('error', 'No se encontró información de la orden.');
+        }
+
+        $order = Order::findOrFail(Session::get('checkout_order_id'));
+        
+        // Limpiar el carrito del usuario
+        Cart::where('user_id', Auth::id())->delete();
+        
+        // Limpiar la sesión
+        Session::forget('checkout_order_id');
+        
+        return view('checkout.success', compact('order'));
+    }
+
+    /**
+     * Handle the Mercado Pago webhook
+     */
+    public function webhook(Request $request)
+    {
+        // Mercado Pago envía notificaciones de tipo "payment" o "merchant_order"
+        $type = $request->input('type');
+        $data = $request->input('data');
+
+        if ($type === 'payment') {
+            try {
+                SDK::setAccessToken(config('services.mercadopago.access_token'));
+                
+                $payment = \MercadoPago\Payment::find_by_id($data['id']);
+                
+                // Obtener la orden usando external_reference
+                $orderId = $payment->external_reference;
+                $order = Order::find($orderId);
+
+                if ($order) {
+                    // Actualizar estado de la orden según el estado del pago
+                    switch ($payment->status) {
+                        case 'approved':
+                            $order->status = 'paid';
+                            $order->payment_method = $payment->payment_method_id;
+                            // TODO: Enviar email de confirmación
+                            // TODO: Actualizar inventario
+                            break;
+                        case 'pending':
+                        case 'in_process':
+                            $order->status = 'pending';
+                            break;
+                        case 'rejected':
+                        case 'cancelled':
+                            $order->status = 'cancelled';
+                            break;
+                    }
+                    
+                    $order->save();
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error procesando webhook de Mercado Pago: ' . $e->getMessage());
+                return response()->json(['error' => 'Error processing webhook'], 500);
+            }
+        }
+
+        return response()->json(['status' => 'ok'], 200);
+    }
+}
