@@ -1,5 +1,5 @@
 # Build frontend assets
-FROM node:18 as frontend
+FROM node:18 AS frontend
 WORKDIR /app
 COPY package*.json ./
 RUN npm install

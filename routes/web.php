@@ -20,6 +20,11 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+// Health check endpoint para mantener el servidor activo
+Route::get('/ping', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()], 200);
+});
+
 // Página principal
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
