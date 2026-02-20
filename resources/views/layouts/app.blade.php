@@ -190,10 +190,10 @@
 
         .search-input-minimal {
             width: 100%;
-            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            padding: 0.45rem 1rem 0.45rem 2.5rem;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             background: #fafafa;
             transition: all 0.3s ease;
         }
@@ -452,21 +452,67 @@
             color: #000;
         }
 
-        /* Mobile Search */
-        .mobile-search-minimal {
-            background: #fafafa;
+        /* Boton lupa de busqueda en movil */
+        .search-toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: #000;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: color 0.2s ease;
+        }
+
+        .search-toggle-btn:hover {
+            color: #555;
+        }
+
+        /* Panel de busqueda desplegable movil */
+        .mobile-search-panel {
+            background: #fff;
             border-bottom: 1px solid #e0e0e0;
             position: fixed;
             top: 60px;
             left: 0;
             right: 0;
             z-index: 1020;
+            /* Oculto por defecto - animacion hacia arriba */
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, box-shadow 0.3s ease;
         }
 
-        @media (max-width: 991px) {
-            .navbar-search {
-                display: none !important;
-            }
+        .mobile-search-panel.open {
+            max-height: 80px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Boton X para cerrar la busqueda */
+        .search-close-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .search-close-btn:hover {
+            color: #333;
+        }
+
+        /* Ajustar el paddding-right del input para que no tape la X */
+        .mobile-search-panel .search-input-minimal {
+            padding-right: 2.5rem;
         }
 
         /* WhatsApp Floating Button */
@@ -742,6 +788,11 @@
 
                 <!-- Right: Cart & Auth -->
                 <div class="navbar-right">
+                    <!-- Lupa de Busqueda Movil -->
+                    <button class="search-toggle-btn d-lg-none" id="search-toggle-btn" aria-label="Buscar">
+                        <i class="fas fa-search"></i>
+                    </button>
+
                     <!-- Cart Icon -->
                     <a href="{{ route('cart.index') }}" class="cart-icon-minimal">
                         <i class="fas fa-shopping-cart"></i>
@@ -785,17 +836,20 @@
         </div>
     </nav>
 
-    <!-- Mobile Search -->
-    <div class="mobile-search-minimal d-lg-none">
+    <!-- Panel de Busqueda Desplegable Movil -->
+    <div class="mobile-search-panel d-lg-none" id="mobile-search-panel">
         <div class="container py-2">
             <div class="search-wrapper position-relative">
                 <i class="fas fa-search search-icon-minimal"></i>
-                <input type="search" 
-                       name="buscar" 
-                       id="mobile-search-minimal" 
-                       class="search-input-minimal" 
+                <input type="search"
+                       name="buscar"
+                       id="mobile-search-minimal"
+                       class="search-input-minimal"
                        placeholder="Buscar perfumes..."
                        autocomplete="off">
+                <button class="search-close-btn" id="search-close-btn" aria-label="Cerrar busqueda">
+                    <i class="fas fa-times"></i>
+                </button>
                 <div id="mobile-search-results-minimal" class="search-results d-none"></div>
             </div>
         </div>
@@ -840,7 +894,7 @@
     </div>
 
     <!-- Contenido Principal -->
-    <main class="main-content" style="padding-top: calc(60px + 52px); padding-bottom: 2rem;">
+    <main class="main-content" style="padding-top: 70px; padding-bottom: 2rem;">
         <div class="container">
             <!-- Alerts -->
             @if(session('success'))
@@ -930,6 +984,54 @@
     
     @stack('scripts')
     <script>
+        // Toggle de busqueda movil (lupa)
+        const searchToggleBtn = document.getElementById('search-toggle-btn');
+        const searchCloseBtn = document.getElementById('search-close-btn');
+        const mobileSearchPanel = document.getElementById('mobile-search-panel');
+        const mobileSearchInput = document.getElementById('mobile-search-minimal');
+
+        function abrirBusqueda() {
+            mobileSearchPanel.classList.add('open');
+            // Enfocar el input con un pequeno delay para la animacion
+            setTimeout(() => { if (mobileSearchInput) mobileSearchInput.focus(); }, 320);
+        }
+
+        function cerrarBusqueda() {
+            mobileSearchPanel.classList.remove('open');
+            if (mobileSearchInput) {
+                mobileSearchInput.value = '';
+                const results = document.getElementById('mobile-search-results-minimal');
+                if (results) results.classList.add('d-none');
+            }
+        }
+
+        if (searchToggleBtn) {
+            searchToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (mobileSearchPanel.classList.contains('open')) {
+                    cerrarBusqueda();
+                } else {
+                    abrirBusqueda();
+                }
+            });
+        }
+
+        if (searchCloseBtn) {
+            searchCloseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cerrarBusqueda();
+            });
+        }
+
+        // Cerrar el panel al hacer clic fuera de el
+        document.addEventListener('click', (e) => {
+            if (mobileSearchPanel && mobileSearchPanel.classList.contains('open')) {
+                if (!mobileSearchPanel.contains(e.target) && !searchToggleBtn.contains(e.target)) {
+                    cerrarBusqueda();
+                }
+            }
+        });
+
         // Mobile Menu Logic
         document.addEventListener('DOMContentLoaded', function() {
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');

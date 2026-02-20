@@ -5,7 +5,7 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section mb-5">
+<section class="hero-section mb-2">
     <div class="hero-video">
         <video autoplay muted loop playsinline class="background-video">
             <source src="{{ asset('videos/background.mp4') }}" type="video/mp4">
@@ -275,25 +275,30 @@
 </section>
 
 <!-- Features Section -->
-<section class="features-section mb-5">
-    <div class="row g-4 justify-content-center">
-        <div class="col-md-6 col-12">
-            <div class="feature-item text-center">
-                <div class="feature-icon">
-                    <i class="fas fa-shield-alt"></i>
+<section class="features-section mb-4">
+    <div class="container">
+        <div class="row g-2 justify-content-center">
+            <div class="col-6">
+                <div class="feature-item-mini d-flex align-items-center gap-3">
+                    <div class="feature-icon-mini">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="text-start">
+                        <h6 class="mb-0">Envio Seguro</h6>
+                        <small>Protegemos tu compra</small>
+                    </div>
                 </div>
-                <h4>Envío Seguro</h4>
-                <p>Protegemos tu compra en cada envío</p>
             </div>
-        </div>
-        
-        <div class="col-md-6 col-12">
-            <div class="feature-item text-center">
-                <div class="feature-icon">
-                    <i class="fas fa-headset"></i>
+            <div class="col-6">
+                <div class="feature-item-mini d-flex align-items-center gap-3">
+                    <div class="feature-icon-mini">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="text-start">
+                        <h6 class="mb-0">Soporte 24/7</h6>
+                        <small>Atencion al cliente</small>
+                    </div>
                 </div>
-                <h4>Soporte 24/7</h4>
-                <p>Atención al cliente siempre</p>
             </div>
         </div>
     </div>
@@ -301,20 +306,25 @@
 
 <!-- Newsletter Section -->
 <section class="newsletter-section">
-    <div class="newsletter-card text-center">
-        <h3>Mantente al día con nuestras novedades</h3>
-        <p>Suscríbete y recibe ofertas exclusivas y lanzamientos antes que nadie</p>
-        
-        <form id="newsletter-form" class="newsletter-form">
-            @csrf
-            <div class="input-group">
-                <input type="email" name="email" class="form-control" placeholder="Tu correo electrónico" required>
-                <button class="btn btn-primary-custom" type="submit">
-                    Suscribirse
-                </button>
+    <div class="newsletter-card">
+        <div class="newsletter-inner">
+            <div class="newsletter-text">
+                <h4 class="newsletter-titulo">Novedades y Ofertas Exclusivas</h4>
+                <p class="newsletter-subtitulo">Recibe promociones antes que nadie</p>
             </div>
-            <div id="newsletter-message" class="mt-3" style="display: none;"></div>
-        </form>
+            <form id="newsletter-form" class="newsletter-form-inline">
+                @csrf
+                <div class="newsletter-input-group">
+                    <input type="email" name="email" class="newsletter-input" placeholder="Tu correo electronico" required>
+                    <button class="newsletter-btn" type="submit">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Suscribirse</span>
+                    </button>
+                </div>
+                <div id="newsletter-message" class="mt-2" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
 
         @push('scripts')
         <script>
@@ -395,9 +405,13 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        /* Centrar el video para ocultar bordes del recorte */
         position: absolute;
-        bottom: 0;
-        left: 0;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 100%;
+        min-height: 100%;
     }
     
     .hero-content {
@@ -497,75 +511,127 @@
     }
     
     
-    /* Features Section */
+    /* Features Section Compacta */
     .features-section {
         background-color: var(--light-gray);
-        padding: 3rem 0;
-        border-radius: 15px;
+        padding: 1rem 0;
+        border-radius: 12px;
     }
-    
-    .feature-item {
-        padding: 2rem 1rem;
+
+    .feature-item-mini {
+        padding: 0.75rem 1rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        height: 100%;
     }
-    
-    .feature-icon {
-        width: 80px;
-        height: 80px;
-        background-color: var(--primary-color);
+
+    .feature-icon-mini {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1rem;
-        color: white;
-        font-size: 2rem;
+        color: var(--gold);
+        font-size: 1.1rem;
     }
-    
-    .feature-item h4 {
-        font-size: 1.2rem;
+
+    .feature-item-mini h6 {
+        font-size: 0.9rem;
         font-weight: 600;
-        margin-bottom: 0.5rem;
         color: var(--primary-color);
     }
-    
-    .feature-item p {
+
+    .feature-item-mini small {
         color: var(--medium-gray);
-        font-size: 0.95rem;
+        font-size: 0.75rem;
     }
-    
-    /* Newsletter Section */
+
+    /* Newsletter Compacto */
     .newsletter-section {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        padding: 3rem;
         border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .newsletter-card {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 1.5rem;
         color: white;
+        border-radius: 15px;
     }
-    
-    .newsletter-card h3 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
+
+    .newsletter-inner {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
     }
-    
-    .newsletter-card p {
+
+    .newsletter-text {
+        flex: 1;
+        min-width: 160px;
+    }
+
+    .newsletter-titulo {
         font-size: 1.1rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+        line-height: 1.3;
     }
-    
-    .newsletter-form {
-        max-width: 500px;
-        margin: 0 auto;
+
+    .newsletter-subtitulo {
+        font-size: 0.82rem;
+        opacity: 0.85;
+        margin: 0;
     }
-    
-    .newsletter-form .form-control {
+
+    .newsletter-form-inline {
+        flex: 2;
+        min-width: 220px;
+    }
+
+    .newsletter-input-group {
+        display: flex;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .newsletter-input {
+        flex: 1;
+        padding: 0.65rem 1rem;
         border: none;
-        padding: 1rem;
-        border-radius: 25px 0 0 25px;
+        font-size: 0.9rem;
+        outline: none;
+        background: white;
+        color: #333;
     }
-    
-    .newsletter-form .btn {
-        border-radius: 0 25px 25px 0;
-        padding: 1rem 2rem;
+
+    .newsletter-input::placeholder {
+        color: #aaa;
+        font-size: 0.85rem;
+    }
+
+    .newsletter-btn {
+        padding: 0.65rem 1.1rem;
+        background: var(--gold);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .newsletter-btn:hover {
+        background: #c9a227;
     }
     
     /* Product Pricing */
