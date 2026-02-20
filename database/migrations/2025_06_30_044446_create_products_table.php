@@ -22,7 +22,8 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->integer('size')->comment('Size in ml');
-            $table->enum('gender', ['male', 'female', 'unisex'])->default('unisex');
+            // Se usa string en lugar de enum para compatibilidad con PostgreSQL (Supabase)
+            $table->string('gender', 10)->default('unisex');
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

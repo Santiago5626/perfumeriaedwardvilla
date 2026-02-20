@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->decimal('total', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'shipped', 'delivered', 'cancelled'])->default('pending');
+            // Se usa string en lugar de enum para compatibilidad con PostgreSQL (Supabase)
+            $table->string('status', 20)->default('pending');
             $table->string('shipping_address');
             $table->string('shipping_city');
             $table->string('shipping_phone');

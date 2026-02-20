@@ -10,6 +10,12 @@ class Product extends Model
     use HasFactory;
 
     /**
+     * Valores permitidos para el campo genero.
+     * Reemplaza la restriccion del ENUM de MySQL para compatibilidad con PostgreSQL.
+     */
+    const GENEROS_VALIDOS = ['male', 'female', 'unisex'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

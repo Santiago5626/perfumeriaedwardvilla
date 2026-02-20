@@ -10,6 +10,12 @@ class Order extends Model
     use HasFactory;
 
     /**
+     * Estados permitidos para el campo status.
+     * Reemplaza la restriccion del ENUM de MySQL para compatibilidad con PostgreSQL.
+     */
+    const ESTADOS_VALIDOS = ['pending', 'paid', 'shipped', 'delivered', 'cancelled'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
