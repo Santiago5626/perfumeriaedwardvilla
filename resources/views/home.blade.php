@@ -416,7 +416,71 @@
         max-height: 80%;
         object-fit: contain;
     }
-    
+
+    /* Tarjetas de Producto en Home */
+    .product-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+    }
+
+    .product-card .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.04);
+    }
+
+    .product-card .product-info {
+        padding: 1rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card .product-category {
+        color: var(--medium-gray);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-card .product-title {
+        font-size: 0.95rem;
+        color: var(--primary-color);
+        margin-bottom: 0.4rem;
+        line-height: 1.3;
+        font-weight: 600;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-card .current-price {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
     /* Titulos de Secciones */
     .section-title {
         font-family: var(--font-display);
