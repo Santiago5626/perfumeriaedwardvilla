@@ -476,7 +476,7 @@
             background: #fff;
             border-bottom: 1px solid #e0e0e0;
             position: fixed;
-            top: 60px;
+            top: 0;
             left: 0;
             right: 0;
             z-index: 1020;
@@ -484,10 +484,12 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease, box-shadow 0.3s ease;
+            padding-top: 0;
         }
 
         .mobile-search-panel.open {
-            max-height: 80px;
+            max-height: 140px;
+            padding-top: 70px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
@@ -828,7 +830,7 @@
                     @endauth
 
                     <!-- Mobile Menu Toggle -->
-                    <button class="mobile-menu-toggle" id="mobile-menu-btn">
+                    <button class="mobile-menu-toggle d-lg-none" id="mobile-menu-btn">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
@@ -838,7 +840,7 @@
 
     <!-- Panel de Busqueda Desplegable Movil -->
     <div class="mobile-search-panel d-lg-none" id="mobile-search-panel">
-        <div class="container py-2">
+        <div class="container">
             <div class="search-wrapper position-relative">
                 <i class="fas fa-search search-icon-minimal"></i>
                 <input type="search"
@@ -929,26 +931,28 @@
     <!-- Footer -->
     <footer class="footer mt-4 py-4">
         <div class="container">
-            <div class="row text-center text-md-start align-items-center">
-                <div class="col-md-5 mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start">
+            <div class="row align-items-start">
+                <div class="col-12 col-md-5 mb-4 mb-md-0 text-center text-md-start">
                     <a href="{{ route('home') }}" class="mb-3 d-inline-block">
                         <img src="{{ asset('images/logo.png') }}" alt="Edward Villa Perfumería" style="height: 60px; width: auto; object-fit: contain;">
                     </a>
-                    <p class="text-white-50 small mb-0" style="max-width: 250px;">Las mejores fragancias de lujo para toda ocasión.</p>
                 </div>
-                <div class="col-md-7 mb-3 mb-md-0 d-flex flex-column align-items-center align-items-md-start pe-md-5">
-                    <h6 class="text-white mb-3" style="font-family: var(--font-display);">Contacto</h6>
-                    <p class="text-white-50 mb-2 small"><i class="fas fa-envelope text-gold me-3"></i>edwardvillaperfumeria@gmail.com</p>
-                    <p class="text-white-50 mb-2 small"><i class="fas fa-phone text-gold me-3"></i>+57 318 4812707</p>
-                    <a href="https://www.instagram.com/edward_villa2/?igsh=MTV6bDRydzhmc29wMw%3D%3D&utm_source=qr#" target="_blank" class="text-white-50 text-decoration-none small hover-gold transition-colors">
-                        <i class="fab fa-instagram text-gold me-3"></i>@edward_villa2
+                <div class="col-12 col-md-7 mb-3 mb-md-0 text-start">
+                    <h6 class="text-white mb-3 text-center text-md-start" style="font-family: var(--font-display);">Contacto</h6>
+                    <p class="text-white-50 mb-2 small"><i class="fas fa-envelope text-gold me-2"></i>edwardvillaperfumeria@gmail.com</p>
+                    <p class="text-white-50 mb-2 small"><i class="fas fa-phone text-gold me-2"></i>+57 318 4812707</p>
+                    <a href="https://www.instagram.com/edward_villa2/?igsh=MTV6bDRydzhmc29wMw%3D%3D&utm_source=qr#" target="_blank" class="text-white-50 text-decoration-none small hover-gold transition-colors d-block mb-2">
+                        <i class="fab fa-instagram text-gold me-2"></i>@edward_villa2
                     </a>
+                    <p class="text-white-50 mb-0 small"><i class="fas fa-map-marker-alt text-gold me-2"></i>Calle 14 # 6-19 Barrio Centro, Villanueva - La Guajira</p>
                 </div>
             </div>
             <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
             <div class="row">
                 <div class="col-12 text-center text-white-50" style="font-size: 0.8rem;">
                     &copy; {{ date('Y') }} Edward Villa Perfumería. Todos los derechos reservados.
+                    <br>
+                    <span style="font-size: 0.75rem;">Desarrollado por Santiago Lobo</span>
                 </div>
             </div>
         </div>

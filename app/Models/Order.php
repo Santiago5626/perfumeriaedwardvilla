@@ -22,12 +22,25 @@ class Order extends Model
      */
     protected $fillable = [
         'user_id',
+        // Datos del comprador
+        'first_name',
+        'email',
+        'phone',
+        // Dirección de envío
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
+        'notes',
+        // Montos
+        'subtotal',
+        'shipping',
         'total',
+        // Estado y pago
         'status',
-        'shipping_address',
-        'shipping_city',
-        'shipping_phone',
-        'payment_method'
+        'payment_method',
+        'payment_id',
     ];
 
     /**
