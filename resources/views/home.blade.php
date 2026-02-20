@@ -230,28 +230,29 @@
     @endpush
 @endif
 
-<!-- Featured Products -->
+<!-- Productos Destacados -->
 <section class="featured-section mb-5">
-    <div class="text-center mb-4">
-        <h2 class="section-title">Productos Destacados</h2>
-        <p class="section-subtitle">Nuestras fragancias más populares</p>
-    </div>
-    
-    <div class="row g-4">
-        @foreach($featuredProducts as $product)
-            <div class="col-6 col-md-3">
-                <div class="product-card">
-                    <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
-                        @if($product->image)
-                            <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/products/' . $product->image) }}" 
-                                 alt="{{ $product->name }}" 
-                                 class="product-image">
-                        @else
-                            <div class="product-image d-flex align-items-center justify-content-center bg-light">
-                                <i class="fas fa-image text-muted" style="font-size: 2rem;"></i>
-                            </div>
-                        @endif
-                        
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="section-title">Productos Destacados</h2>
+            <p class="section-subtitle">Nuestras fragancias más populares</p>
+        </div>
+        
+        <div class="row g-3 g-md-4">
+            @foreach($featuredProducts as $product)
+                <div class="col-6 col-md-3">
+                    <div class="product-card">
+                        <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
+                            @if($product->image)
+                                <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/products/' . $product->image) }}" 
+                                     alt="{{ $product->name }}" 
+                                     class="product-image">
+                            @else
+                                <div class="product-image d-flex align-items-center justify-content-center bg-light">
+                                    <i class="fas fa-image text-muted" style="font-size: 2rem;"></i>
+                                </div>
+                            @endif
+                            
                             <div class="product-info">
                                 <div class="product-category">{{ $product->category->name }}</div>
                                 <h3 class="product-title">{{ $product->name }}</h3>
@@ -259,16 +260,17 @@
                                     <span class="current-price">${{ number_format($product->price, 2) }}</span>
                                 </div>
                             </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
-    
-    <div class="text-center mt-4">
-        <a href="{{ route('products.index') }}" class="btn btn-outline-dark btn-lg">
-            Ver Todos los Productos
-        </a>
+            @endforeach
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ route('products.index') }}" class="btn btn-outline-dark btn-lg">
+                Ver Todos los Productos
+            </a>
+        </div>
     </div>
 </section>
 
@@ -413,8 +415,9 @@
         max-width: 80%;
         max-height: 80%;
         object-fit: contain;
+    }
     
-    /* Section Titles */
+    /* Titulos de Secciones */
     .section-title {
         font-family: var(--font-display);
         font-size: 2.5rem;
@@ -530,41 +533,49 @@
         font-weight: 600;
     }
 
-    /* Responsive Design */
+    /* Responsive Movil */
     @media (max-width: 768px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.1rem;
-        }
-        
         .section-title {
             font-size: 2rem;
         }
         
-        .category-image {
-            height: 150px;
-            font-size: 3rem;
-        }
-        
-        .category-info {
-            padding: 1.5rem;
-        }
-        
         .hero-section {
-            height: 50vh;
+            height: 45vh;
+        }
+
+        .featured-section {
+            padding: 0;
+        }
+
+        /* Tarjetas de producto mas compactas en movil */
+        .product-card .product-image {
+            height: 180px;
+        }
+
+        .product-info {
+            padding: 0.75rem;
+        }
+
+        .product-title {
+            font-size: 0.85rem;
+        }
+
+        .current-price {
+            font-size: 1rem;
         }
     }
     
     @media (max-width: 576px) {
-        .hero-title {
-            font-size: 2rem;
-        }
-        
         .section-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+        }
+
+        .hero-section {
+            height: 40vh;
         }
         
         .newsletter-form .form-control,
@@ -575,6 +586,15 @@
         
         .newsletter-form .input-group {
             flex-direction: column;
+        }
+
+        .newsletter-section {
+            padding: 2rem 1rem;
+        }
+
+        /* Tarjetas aun mas compactas en pantallas muy pequenas */
+        .product-card .product-image {
+            height: 150px;
         }
     }
 </style>

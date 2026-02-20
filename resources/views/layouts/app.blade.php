@@ -310,11 +310,50 @@
             cursor: pointer;
             position: relative;
             z-index: 1031;
+            flex-shrink: 0;
         }
 
         @media (max-width: 991px) {
             .mobile-menu-toggle {
                 display: block !important;
+            }
+
+            /* Reducir logo en movil */
+            .navbar-logo img {
+                height: 42px !important;
+                max-height: 42px !important;
+            }
+
+            /* Evitar que el navbar-content se desborde */
+            .navbar-content {
+                gap: 0.75rem;
+            }
+
+            .navbar-right {
+                gap: 0.5rem;
+            }
+        }
+
+        /* Pantallas muy pequenas: asegurar que el boton siempre sea visible */
+        @media (max-width: 400px) {
+            .navbar-logo img {
+                height: 36px !important;
+                max-height: 36px !important;
+            }
+
+            .navbar-content {
+                gap: 0.5rem;
+                padding: 0;
+            }
+
+            .cart-icon-minimal {
+                font-size: 1rem;
+                padding: 0.4rem;
+            }
+
+            .mobile-menu-toggle {
+                font-size: 1.2rem;
+                padding: 0.4rem;
             }
         }
 
@@ -738,7 +777,7 @@
                     @endauth
 
                     <!-- Mobile Menu Toggle -->
-                    <button class="mobile-menu-toggle" id="mobile-menu-btn" style="display: none;">
+                    <button class="mobile-menu-toggle" id="mobile-menu-btn">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
@@ -800,8 +839,8 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <!-- Contenido Principal -->
+    <main class="main-content" style="padding-top: calc(60px + 52px); padding-bottom: 2rem;">
         <div class="container">
             <!-- Alerts -->
             @if(session('success'))
