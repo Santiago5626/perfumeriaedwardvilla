@@ -223,10 +223,26 @@
 
 @push('styles')
 <style>
+    .product-image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        overflow: hidden;
+        padding: 1.5rem;
+        min-height: 350px;
+        max-height: 480px;
+    }
+
     .product-detail-image {
-        width: 100%;
-        height: 500px;
-        object-fit: cover;
+        max-width: 100%;
+        max-height: 420px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
     }
     
     .product-detail-title {
@@ -297,8 +313,14 @@
             font-size: 2rem;
         }
         
+        .product-image-container {
+            min-height: 250px;
+            max-height: 320px;
+            padding: 1rem;
+        }
+
         .product-detail-image {
-            height: 300px;
+            max-height: 280px;
         }
     }
     
@@ -311,8 +333,13 @@
             font-size: 1.8rem;
         }
         
+        .product-image-container {
+            min-height: 200px;
+            max-height: 260px;
+        }
+
         .product-detail-image {
-            height: 250px;
+            max-height: 220px;
         }
     }
 </style>
