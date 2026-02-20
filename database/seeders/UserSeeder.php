@@ -15,13 +15,15 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // Crear usuario administrador
-        User::create([
-            'name' => 'Edward Villa Admin',
-            'email' => 'edwardvillaperfumeria@gmail.com',
-            'password' => Hash::make('admin123'),
-            'is_admin' => true,
-        ]);
+        // Crear usuario administrador principal
+        User::updateOrCreate(
+            ['email' => 'admin@edwardvillaperfumeria.com'],
+            [
+                'name' => 'Administrador Edward Villa',
+                'password' => Hash::make('Admin123'),
+                'is_admin' => true,
+            ]
+        );
 
         // Crear algunos usuarios de prueba
         User::create([
