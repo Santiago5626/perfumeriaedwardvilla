@@ -34,6 +34,9 @@ COPY . .
 # Instalar dependencias de PHP (Ignorando dev para producción)
 RUN composer install --no-dev --optimize-autoloader
 
+# Crear enlace simbólico del storage para que las imágenes de productos sean públicas
+RUN php artisan storage:link
+
 # Instalar dependencias de Node.js y compilar assets (Vite/Tailwind/Bootstrap)
 RUN npm install
 RUN npm run build
