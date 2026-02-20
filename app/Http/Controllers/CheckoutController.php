@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Session;
 use MercadoPago\SDK;
 use MercadoPago\Preference;
 use MercadoPago\Item;
+use MercadoPago\Payer;
 
 class CheckoutController extends Controller
 {
@@ -221,7 +222,7 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Show the Mercado Pago payment form
+     * Crear preferencia de Mercado Pago y redirigir al enlace de pago
      */
     public function payment()
     {
@@ -246,41 +247,39 @@ class CheckoutController extends Controller
                 $item = new Item();
                 $item->title = $orderItem->product->name;
                 $item->quantity = $orderItem->quantity;
-                $item->unit_price = floatval($orderItem->final_price);
+                $item->unit_price = floatval($orderItem->final_price ?? $orderItem->price);
+                $item->currency_id = 'COP';
                 $items[] = $item;
             }
 
             // Agregar envío como un item si tiene costo
             if ($order->shipping > 0) {
                 $shippingItem = new Item();
-                $shippingItem->title = 'Envío';
+                $shippingItem->title = 'Costo de envío';
                 $shippingItem->quantity = 1;
                 $shippingItem->unit_price = floatval($order->shipping);
+                $shippingItem->currency_id = 'COP';
                 $items[] = $shippingItem;
             }
 
             $preference->items = $items;
 
             // Configurar URLs de retorno
-            $preference->back_urls = [
-                'success' => route('checkout.success'),
-                'failure' => route('cart.index'),
-                'pending' => route('checkout.success')
-            ];
-            $preference->auto_return = 'approved';
+            // Nota: NO se envía auto_return para evitar la validación estricta back_url.success del API
+            $preference->back_urls = (object) array(
+                "success" => route('checkout.success'),
+                "failure" => route('cart.index'),
+                "pending" => route('checkout.success')
+            );
 
             // Configurar referencia externa (ID de la orden)
             $preference->external_reference = strval($order->id);
 
-            // Información del pagador
-            $preference->payer = [
-                'name' => $order->first_name,
-                'email' => $order->email,
-                'phone' => [
-                    'area_code' => '',
-                    'number' => $order->phone
-                ]
-            ];
+            // Información del pagador (Debe ser un objeto en este wrapper)
+            $payer = new Payer();
+            $payer->name = $order->first_name;
+            $payer->email = $order->email;
+            $preference->payer = $payer;
 
             // Guardar preferencia
             $preference->save();
@@ -289,13 +288,32 @@ class CheckoutController extends Controller
             $order->payment_id = $preference->id;
             $order->save();
 
-            return view('checkout.payment', compact('order', 'preference'));
+            \Log::info('MERCADOPAGO PREFERENCE INFO:', [
+                'id' => $preference->id,
+                'init_point' => $preference->init_point,
+                'sandbox_init_point' => $preference->sandbox_init_point,
+            ]);
+
+            // Determinar URL de pago según modo (sandbox o producción)
+            $esSandbox = config('services.mercadopago.sandbox', true);
+            $urlPago = $esSandbox
+                ? $preference->sandbox_init_point
+                : $preference->init_point;
+
+            if (empty($urlPago)) {
+                throw new \Exception('No se pudo generar la URL de pago de Mercado Pago. La preferencia se guardó sin init_point.');
+            }
+
+            // Redirigir directamente a la pasarela de pago de Mercado Pago
+            return redirect()->away($urlPago);
 
         } catch (\Exception $e) {
+            \Log::error('MERCADOPAGO EXCEPTION: ' . $e->getMessage() . ' - ' . $e->getTraceAsString());
             return redirect()->route('cart.index')
                            ->with('error', 'Error al crear la preferencia de pago: ' . $e->getMessage());
         }
     }
+
 
     /**
      * Show the success page after payment
