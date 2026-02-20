@@ -25,10 +25,10 @@ jobs:
             echo "Respuesta del servidor: $response"
             
             if [ $response -eq 200 ]; then
-              echo "✅ Servidor respondió correctamente"
+              echo " Servidor respondió correctamente"
             else
-              echo "⚠️ Servidor respondió con código: $response"
+              echo " Servidor respondió con código: $response"
             fi
           else
-            echo "🌙 Fuera del horario permitido. No se hace ping."
+            echo " Fuera del horario permitido. No se hace ping."
           fi

@@ -44,9 +44,7 @@ Para ver los logs del workflow:
    - ⚠️ Errores si el servidor no responde
    - 🌙 Mensajes cuando está fuera del horario activo
 
-## 🌍 Zona Horaria
-
-El sistema usa **America/Bogota (UTC-5)**. Si necesitas cambiar la zona horaria:
+ 
 
 1. Edita `.github/workflows/keep-alive.yml`
 2. Cambia `TZ=America/Bogota` por tu zona horaria

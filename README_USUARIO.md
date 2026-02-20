@@ -1,4 +1,4 @@
-# 🌸 Edward Villa Perfumería - Guía del Usuario
+#  Edward Villa Perfumería - Guía del Usuario
 
 Bienvenido a **Edward Villa Perfumería**, tu tienda en línea para descubrir y adquirir las mejores fragancias.
 
@@ -269,9 +269,8 @@ Sí, antes de confirmar tu pedido. Una vez confirmado, contacta a soporte inmedi
 
 ### **Contacto**
 Si tienes alguna pregunta o problema:
-
 - 📧 **Email**: soporte@edwardvillaperfumeria.com
-- 📱 **Teléfono**: (Incluir número de contacto)
+- 📱 **Teléfono**: 
 - 💬 **Chat en vivo**: Disponible en la esquina inferior derecha
 
 ### **Horarios de Atención**
