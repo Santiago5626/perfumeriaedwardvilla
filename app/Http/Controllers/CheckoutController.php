@@ -119,10 +119,13 @@ class CheckoutController extends Controller
         
         $shippingCost = 17000; // Costo base de envío
 
-        // Envío gratis para La Paz, Cesar o cualquier municipio de La Guajira
+        // Envio gratis para La Paz, Cesar o cualquier municipio de La Guajira
         if (($cityName === 'la paz' && $stateName === 'cesar') || 
             $stateName === 'la guajira') {
             $shippingCost = 0;
+        // Envio de $7,000 para Valledupar
+        } elseif ($cityName === 'valledupar') {
+            $shippingCost = 7000;
         }
 
         $total = $subtotal + $shippingCost;
@@ -165,10 +168,13 @@ class CheckoutController extends Controller
             $cityName = strtolower(trim($validated['city_name'] ?? $validated['city']));
             $stateName = strtolower(trim($validated['state_name'] ?? $validated['state']));
 
-            // Envío gratis para La Paz, Cesar o cualquier municipio de La Guajira
+            // Envio gratis para La Paz, Cesar o cualquier municipio de La Guajira
             if (($cityName === 'la paz' && $stateName === 'cesar') || 
                 $stateName === 'la guajira') {
                 $shipping = 0;
+            // Envio de $7,000 para Valledupar
+            } elseif ($cityName === 'valledupar') {
+                $shipping = 7000;
             }
 
             $total = $subtotal + $shipping;
