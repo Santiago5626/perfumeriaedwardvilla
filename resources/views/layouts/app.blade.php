@@ -293,20 +293,28 @@
             left: auto;
         }
 
-        /* Mobile Menu */
+        /* Nombre corto en navbar móvil */
+        .navbar-logo-short {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Mobile Menu Toggle */
         .mobile-menu-toggle {
-            display: none;
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: #000;
             padding: 0.5rem;
             cursor: pointer;
+            position: relative;
+            z-index: 1031;
         }
 
         @media (max-width: 991px) {
             .mobile-menu-toggle {
-                display: block;
+                display: block !important;
             }
         }
 
@@ -630,7 +638,10 @@
             <div class="navbar-content">
                 <!-- Left: Logo & Links -->
                 <div class="navbar-left">
-                    <a class="navbar-logo" href="{{ route('home') }}">Edward Villa</a>
+                    <a class="navbar-logo" href="{{ route('home') }}">
+                        <span class="d-none d-lg-inline">Edward Villa</span>
+                        <span class="d-lg-none navbar-logo-short">EV</span>
+                    </a>
                     <div class="navbar-links">
                         <a href="{{ route('home') }}" class="nav-link-minimal">Inicio</a>
                         <a href="{{ route('products.index') }}" class="nav-link-minimal">Productos</a>
@@ -698,7 +709,7 @@
                     @endauth
 
                     <!-- Mobile Menu Toggle -->
-                    <button class="mobile-menu-toggle d-lg-none" id="mobile-menu-btn">
+                    <button class="mobile-menu-toggle" id="mobile-menu-btn" style="display: none;">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
