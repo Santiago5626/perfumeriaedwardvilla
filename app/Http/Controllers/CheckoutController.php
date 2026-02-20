@@ -161,8 +161,9 @@ class CheckoutController extends Controller
 
             // Determinar costo de envío basado en ubicación
             $shipping = 17000; // Costo base de envío
-            $cityName = strtolower(trim($validated['city']));
-            $stateName = strtolower(trim($validated['state']));
+            // Usar los nombres resueltos de ciudad y estado, no los IDs numericos
+            $cityName = strtolower(trim($validated['city_name'] ?? $validated['city']));
+            $stateName = strtolower(trim($validated['state_name'] ?? $validated['state']));
 
             // Envío gratis para La Paz, Cesar o cualquier municipio de La Guajira
             if (($cityName === 'la paz' && $stateName === 'cesar') || 
@@ -327,6 +328,17 @@ class CheckoutController extends Controller
         }
 
         $order = Order::findOrFail(Session::get('checkout_order_id'));
+
+        // Verificar parámetros de retorno de MercadoPago
+        $collectionStatus = request()->query('collection_status');
+
+        // Si MercadoPago confirma el pago aprobado, marcar como pagado
+        if ($collectionStatus === 'approved' && $order->status === 'pending') {
+            $order->status = 'paid';
+            $order->payment_method = request()->query('payment_type', 'mercadopago');
+            $order->payment_id = request()->query('collection_id', $order->payment_id);
+            $order->save();
+        }
         
         // Limpiar el carrito del usuario
         Cart::where('user_id', Auth::id())->delete();

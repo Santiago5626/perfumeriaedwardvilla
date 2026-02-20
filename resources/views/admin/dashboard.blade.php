@@ -50,6 +50,10 @@
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 {{ number_format($stats['total_orders']) }}
                             </div>
+                            <div class="mt-1">
+                                <small class="text-success"><i class="fas fa-check-circle me-1"></i>{{ $stats['paid_orders'] }} pagados</small>
+                                <small class="text-warning ms-2"><i class="fas fa-clock me-1"></i>{{ $stats['pending_orders'] }} pendientes</small>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>

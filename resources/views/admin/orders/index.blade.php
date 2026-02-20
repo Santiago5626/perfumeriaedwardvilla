@@ -21,6 +21,7 @@
                     <select name="status" id="status" class="form-select">
                         <option value="">Todos los estados</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Pagado</option>
                         <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Procesando</option>
                         <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Enviado</option>
                         <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Entregado</option>
@@ -94,8 +95,16 @@
                                         <strong>${{ number_format($order->total, 2) }}</strong>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'processing' ? 'info' : ($order->status == 'shipped' ? 'primary' : ($order->status == 'delivered' ? 'success' : 'danger'))) }}">
-                                            {{ ucfirst($order->status) }}
+                                        <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'paid' ? 'success' : ($order->status == 'processing' ? 'info' : ($order->status == 'shipped' ? 'primary' : ($order->status == 'delivered' ? 'dark' : 'danger')))) }}">
+                                            @switch($order->status)
+                                                @case('pending') Pendiente @break
+                                                @case('paid') Pagado @break
+                                                @case('processing') Procesando @break
+                                                @case('shipped') Enviado @break
+                                                @case('delivered') Entregado @break
+                                                @case('cancelled') Cancelado @break
+                                                @default {{ ucfirst($order->status) }}
+                                            @endswitch
                                         </span>
                                     </td>
                                     <td>
@@ -122,6 +131,16 @@
                                                             <input type="hidden" name="status" value="pending">
                                                             <button type="submit" class="dropdown-item">
                                                                 <i class="fas fa-clock text-warning me-2"></i>Pendiente
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form action="{{ route('admin.pedidos.updateStatus', $order) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <input type="hidden" name="status" value="paid">
+                                                            <button type="submit" class="dropdown-item">
+                                                                <i class="fas fa-check-circle text-success me-2"></i>Pagado
                                                             </button>
                                                         </form>
                                                     </li>
@@ -172,75 +191,87 @@
                                     </td>
                                 </tr>
 
-                                <!-- Modal para ver detalles del pedido -->
-                                <div class="modal fade" id="orderModal{{ $order->id }}" tabindex="-1">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Detalles del Pedido #{{ $order->id }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <h6>Información del Cliente</h6>
-                                                        <p><strong>Nombre:</strong> {{ $order->user->name }}</p>
-                                                        <p><strong>Email:</strong> {{ $order->user->email }}</p>
-                                                        <p><strong>Teléfono:</strong> {{ $order->phone }}</p>
-                                                        <p><strong>Dirección:</strong> {{ $order->shipping_address }}</p>
-                                                        @if($order->notes)
-                                                            <p><strong>Notas:</strong> {{ $order->notes }}</p>
-                                                        @endif
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <h6>Información del Pedido</h6>
-                                                        <p><strong>Fecha:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
-                                                        <p><strong>Estado:</strong> 
-                                                            <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'processing' ? 'info' : ($order->status == 'shipped' ? 'primary' : ($order->status == 'delivered' ? 'success' : 'danger'))) }}">
-                                                                {{ ucfirst($order->status) }}
-                                                            </span>
-                                                        </p>
-                                                        <p><strong>Total:</strong> ${{ number_format($order->total, 2) }}</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <h6 class="mt-4">Productos</h6>
-                                                <div class="table-responsive">
-                                                    <table class="table table-sm">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Producto</th>
-                                                                <th>Cantidad</th>
-                                                                <th>Precio</th>
-                                                                <th>Subtotal</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($order->items as $item)
-                                                                <tr>
-                                                                    <td>{{ $item->product->name }}</td>
-                                                                    <td>{{ $item->quantity }}</td>
-                                                                    <td>${{ number_format($item->price, 2) }}</td>
-                                                                    <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <th colspan="3">Total</th>
-                                                                <th>${{ number_format($order->total, 2) }}</th>
-                                                            </tr>
-                                                        </tfoot>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Modales para ver detalles de los pedidos -->
+                @foreach($orders as $order)
+                    <div class="modal fade" id="orderModal{{ $order->id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Detalles del Pedido #{{ $order->id }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Información del Cliente</h6>
+                                            <p><strong>Nombre:</strong> {{ $order->user->name }}</p>
+                                            <p><strong>Email:</strong> {{ $order->user->email }}</p>
+                                            <p><strong>Teléfono:</strong> {{ $order->phone }}</p>
+                                            <p><strong>Dirección:</strong> {{ $order->shipping_address }}</p>
+                                            @if($order->notes)
+                                                <p><strong>Notas:</strong> {{ $order->notes }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Información del Pedido</h6>
+                                            <p><strong>Fecha:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
+                                            <p><strong>Estado:</strong> 
+                                                <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'paid' ? 'success' : ($order->status == 'processing' ? 'info' : ($order->status == 'shipped' ? 'primary' : ($order->status == 'delivered' ? 'dark' : 'danger')))) }}">
+                                                    @switch($order->status)
+                                                        @case('pending') Pendiente @break
+                                                        @case('paid') Pagado @break
+                                                        @case('processing') Procesando @break
+                                                        @case('shipped') Enviado @break
+                                                        @case('delivered') Entregado @break
+                                                        @case('cancelled') Cancelado @break
+                                                        @default {{ ucfirst($order->status) }}
+                                                    @endswitch
+                                                </span>
+                                            </p>
+                                            <p><strong>Total:</strong> ${{ number_format($order->total, 2) }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="mt-4">Productos</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio</th>
+                                                    <th>Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($order->items as $item)
+                                                    <tr>
+                                                        <td>{{ $item->product->name }}</td>
+                                                        <td>{{ $item->quantity }}</td>
+                                                        <td>${{ number_format($item->price, 2) }}</td>
+                                                        <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="3">Total</th>
+                                                    <th>${{ number_format($order->total, 2) }}</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             @else
                 <div class="text-center py-5">
                     <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>

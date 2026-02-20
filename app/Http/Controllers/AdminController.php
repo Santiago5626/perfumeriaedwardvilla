@@ -31,9 +31,12 @@ class AdminController extends Controller
     public function dashboard()
     {
         // Estadísticas generales
+        // Solo pedidos con estado 'paid' cuentan como ventas
         $stats = [
-            'total_sales' => Order::sum('total'),
+            'total_sales' => Order::where('status', 'paid')->sum('total'),
             'total_orders' => Order::count(),
+            'paid_orders' => Order::where('status', 'paid')->count(),
+            'pending_orders' => Order::where('status', 'pending')->count(),
             'total_products' => Product::count(),
             'total_customers' => User::where('is_admin', false)->count(),
         ];
@@ -45,6 +48,7 @@ class AdminController extends Controller
             DB::raw('EXTRACT(YEAR FROM created_at) as year'),
             DB::raw('SUM(total) as total')
         )
+            ->where('status', 'paid')
             ->where('created_at', '>=', now()->subMonths(6))
             ->groupBy(DB::raw('EXTRACT(YEAR FROM created_at)'), DB::raw('EXTRACT(MONTH FROM created_at)'))
             ->orderBy(DB::raw('EXTRACT(YEAR FROM created_at)'), 'desc')
@@ -54,6 +58,8 @@ class AdminController extends Controller
         // Productos más vendidos
         $topProducts = Product::select('products.*', DB::raw('SUM(order_items.quantity) as total_sold'))
             ->join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'paid')
             ->with('category')
             ->groupBy('products.id', 'products.name', 'products.description', 'products.price', 'products.image', 'products.stock', 'products.category_id', 'products.size', 'products.gender', 'products.active', 'products.created_at', 'products.updated_at')
             ->orderBy('total_sold', 'desc')
@@ -210,6 +216,7 @@ class AdminController extends Controller
         $endDate = $request->get('end_date', now()->endOfMonth());
 
         $sales = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'paid')
             ->with(['items.product'])
             ->latest()
             ->get();
