@@ -39,15 +39,16 @@ class AdminController extends Controller
         ];
 
         // Ventas por mes (últimos 6 meses)
+        // Se usa EXTRACT() en lugar de MONTH()/YEAR() para compatibilidad con PostgreSQL
         $monthlySales = Order::select(
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('YEAR(created_at) as year'),
+            DB::raw('EXTRACT(MONTH FROM created_at) as month'),
+            DB::raw('EXTRACT(YEAR FROM created_at) as year'),
             DB::raw('SUM(total) as total')
         )
             ->where('created_at', '>=', now()->subMonths(6))
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'desc')
-            ->orderBy('month', 'desc')
+            ->groupBy(DB::raw('EXTRACT(YEAR FROM created_at)'), DB::raw('EXTRACT(MONTH FROM created_at)'))
+            ->orderBy(DB::raw('EXTRACT(YEAR FROM created_at)'), 'desc')
+            ->orderBy(DB::raw('EXTRACT(MONTH FROM created_at)'), 'desc')
             ->get();
 
         // Productos más vendidos
