@@ -957,13 +957,13 @@
             <div class="row align-items-start">
                 <div class="col-12 col-md-5 mb-4 mb-md-0 text-center text-md-start">
                     <a href="{{ route('home') }}" class="mb-3 d-inline-block">
-                        <img src="{{ asset('images/logo.png') }}" alt="Edward Villa Perfumería" style="height: 60px; width: auto; object-fit: contain;">
+                        <img src="{{ asset('images/logo_blanco.png') }}" alt="Edward Villa Perfumería" style="height: 60px; width: auto; object-fit: contain;">
                     </a>
                 </div>
                 <div class="col-12 col-md-7 mb-3 mb-md-0 text-start">
                     <h6 class="text-white mb-3 text-center text-md-start" style="font-family: var(--font-display);">Contacto</h6>
                     <p class="text-white-50 mb-2 small"><i class="fas fa-envelope text-gold me-2"></i>edwardvillaperfumeria@gmail.com</p>
-                    <p class="text-white-50 mb-2 small"><i class="fas fa-phone text-gold me-2"></i>+57 318 4812707</p>
+                    <p class="text-white-50 mb-2 small"><i class="fas fa-phone text-gold me-2"></i>+57 311 7013655</p>
                     <a href="https://www.instagram.com/edward_villa2/?igsh=MTV6bDRydzhmc29wMw%3D%3D&utm_source=qr#" target="_blank" class="text-white-50 text-decoration-none small hover-gold transition-colors d-block mb-2">
                         <i class="fab fa-instagram text-gold me-2"></i>@edward_villa2
                     </a>
