@@ -1128,7 +1128,14 @@
 
                 searchTimeout = setTimeout(() => {
                     fetch(`/api/search?query=${encodeURIComponent(query)}`)
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            const contentType = response.headers.get('content-type');
+                            if (!contentType || !contentType.includes('application/json')) {
+                                throw new Error('La respuesta del servidor no es JSON válido');
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.length === 0) {
                                 resultsContainer.innerHTML = '<div class="no-results">No se encontraron resultados</div>';
@@ -1139,7 +1146,7 @@
                                 <a href="${product.url}" class="text-decoration-none">
                                     <div class="search-result-item">
                                         ${product.image ? 
-                                            `<img src="${product.image.startsWith('http') ? product.image : '/storage/products/' + product.image}" 
+                                            `<img src="${product.image}" 
                                                   alt="${product.name}" 
                                                   class="search-result-image"
                                                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -1152,14 +1159,14 @@
                                         }
                                         <div class="search-result-info">
                                             <div class="search-result-name">${product.name}</div>
-                                            <div class="search-result-price">$${product.final_price.toLocaleString('es-CO', {minimumFractionDigits: 2})}</div>
+                                            <div class="search-result-price">$${product.final_price.toLocaleString('es-CO', {minimumFractionDigits: 0})}</div>
                                         </div>
                                     </div>
                                 </a>
                             `).join('');
                         })
                         .catch(error => {
-                            console.error('Error:', error);
+                            console.error('Error de búsqueda:', error);
                             resultsContainer.innerHTML = '<div class="no-results">Error al buscar productos</div>';
                         });
                 }, debounceTime);

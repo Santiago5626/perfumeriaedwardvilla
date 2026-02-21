@@ -16,8 +16,8 @@ class ProductController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
-        $this->middleware('admin')->except(['index', 'show']);
+        $this->middleware('auth')->except(['index', 'show', 'search']);
+        $this->middleware('admin')->except(['index', 'show', 'search']);
     }
 
     /**
@@ -239,7 +239,7 @@ class ProductController extends Controller
                     return [
                         'id' => $product->id,
                         'name' => $product->name,
-                        'image' => $product->image,
+                        'image' => $product->image_url,
                         'final_price' => (float) $product->price,
                         'url' => route('products.show', $product)
                     ];
