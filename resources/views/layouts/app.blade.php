@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
     <title>@yield('title', 'Fragancias de Lujo')</title>
     <meta name="description" content="@yield('description', 'Descubre las mejores fragancias de lujo. Perfumes exclusivos para hombre, mujer y unisex.')">
@@ -628,6 +629,28 @@
         .alert-error-custom {
             background-color: #f8d7da;
             color: #721c24;
+        }
+
+        /* Botones primarios globales */
+        .btn-primary-custom {
+            background: var(--primary-color);
+            color: #ffffff !important;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-primary-custom:hover {
+            background: #3a3a3a;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         }
 
         /* Footer Styles */
