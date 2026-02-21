@@ -428,16 +428,12 @@
     }
 
     .background-video {
-        width: 100%;
-        height: 100%;
         object-fit: cover;
-        /* Centrar el video para ocultar bordes del recorte */
         position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        min-width: 100%;
-        min-height: 100%;
+        top: -20px;
+        left: -20px;
+        width: calc(100% + 40px);
+        height: calc(100% + 40px);
     }
     
     .hero-content {
