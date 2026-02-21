@@ -310,7 +310,7 @@
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <div class="text-start">
-                        <h6 class="mb-0">Envio Seguro</h6>
+                        <h6 class="mb-0">Envío Seguro</h6>
                         <small>Protegemos tu compra</small>
                     </div>
                 </div>
@@ -322,7 +322,7 @@
                     </div>
                     <div class="text-start">
                         <h6 class="mb-0">Soporte 24/7</h6>
-                        <small>Atencion al cliente</small>
+                        <small>Atención al cliente</small>
                     </div>
                 </div>
             </div>

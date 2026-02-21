@@ -123,8 +123,8 @@
                     </p>
                     <p class="mb-0">
                         <i class="fas fa-phone me-2"></i>
-                        <a href="tel:+573184812707" class="text-decoration-none">
-                            +57 318 4812707
+                        <a href="tel:+573117013655" class="text-decoration-none">
+                            +57 311 7013655
                         </a>
                     </p>
                 </div>
