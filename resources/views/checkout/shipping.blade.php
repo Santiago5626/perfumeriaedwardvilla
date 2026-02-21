@@ -577,29 +577,32 @@
         
         function calculateShipping(cityName, stateName) {
             let isFreeShipping = false;
+            let shippingCost = 17000;
             let message = '';
             
             // Normalizar nombres para comparación
             const normalizedCity = cityName.toLowerCase().trim();
             const normalizedState = stateName.toLowerCase().trim();
             
-            // Verificar si es La Paz, Cesar
-            if (normalizedCity === 'la paz' && normalizedState === 'cesar') {
+            // Gratis: La Paz (Cesar), San Diego (Cesar) o cualquier municipio de La Guajira
+            if ((normalizedCity === 'la paz' || normalizedCity === 'san diego') && normalizedState === 'cesar') {
                 isFreeShipping = true;
-                message = '¡Envío gratis a La Paz, Cesar!';
-            }
-            // Verificar si es cualquier municipio de La Guajira
-            else if (normalizedState === 'la guajira') {
+                shippingCost = 0;
+                message = `¡Envío gratis a ${cityName}!`;
+            } else if (normalizedState === 'la guajira') {
                 isFreeShipping = true;
+                shippingCost = 0;
                 message = '¡Envío gratis a La Guajira!';
-            }
-            // Resto de Colombia
-            else {
+            // $7.000: Valledupar o Manaure
+            } else if (normalizedCity === 'valledupar' || normalizedCity === 'manaure') {
+                shippingCost = 7000;
+                message = `Costo de envío a ${cityName}: $7.000`;
+            } else {
                 message = 'Costo de envío: $17.000';
             }
             
             showShippingInfo(message, isFreeShipping);
-            updateOrderSummary(isFreeShipping);
+            updateOrderSummary(isFreeShipping, shippingCost);
         }
         
         function showShippingInfo(message, isFree) {
@@ -612,7 +615,10 @@
             shippingInfo.style.display = 'none';
         }
         
-        function updateOrderSummary(isFreeShipping) {
+        function updateOrderSummary(isFreeShipping, shippingCost) {
+            shippingCost = shippingCost ?? (isFreeShipping ? 0 : 17000);
+            const shippingDisplay = shippingCost === 0 ? 'Gratis' : '$' + shippingCost.toLocaleString('es-CO');
+            const shippingClass = shippingCost === 0 ? 'text-success fw-bold' : 'fw-bold';
             // Verificar si existe el resumen del pedido en esta página
             const summaryRows = document.querySelectorAll('.summary-row');
             const totalRow = document.querySelector('.summary-total');

@@ -119,12 +119,12 @@ class CheckoutController extends Controller
         
         $shippingCost = 17000; // Costo base de envío
 
-        // Envio gratis para La Paz, Cesar o cualquier municipio de La Guajira
-        if (($cityName === 'la paz' && $stateName === 'cesar') || 
+        // Envio gratis para La Paz o San Diego (Cesar), o cualquier municipio de La Guajira
+        if ((($cityName === 'la paz' || $cityName === 'san diego') && $stateName === 'cesar') ||
             $stateName === 'la guajira') {
             $shippingCost = 0;
-        // Envio de $7,000 para Valledupar
-        } elseif ($cityName === 'valledupar') {
+        // Envio de $7,000 para Valledupar o Manaure
+        } elseif ($cityName === 'valledupar' || $cityName === 'manaure') {
             $shippingCost = 7000;
         }
 
@@ -168,12 +168,12 @@ class CheckoutController extends Controller
             $cityName = strtolower(trim($validated['city_name'] ?? $validated['city']));
             $stateName = strtolower(trim($validated['state_name'] ?? $validated['state']));
 
-            // Envio gratis para La Paz, Cesar o cualquier municipio de La Guajira
-            if (($cityName === 'la paz' && $stateName === 'cesar') || 
+            // Envio gratis para La Paz o San Diego (Cesar), o cualquier municipio de La Guajira
+            if ((($cityName === 'la paz' || $cityName === 'san diego') && $stateName === 'cesar') ||
                 $stateName === 'la guajira') {
                 $shipping = 0;
-            // Envio de $7,000 para Valledupar
-            } elseif ($cityName === 'valledupar') {
+            // Envio de $7,000 para Valledupar o Manaure
+            } elseif ($cityName === 'valledupar' || $cityName === 'manaure') {
                 $shipping = 7000;
             }
 
