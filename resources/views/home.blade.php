@@ -8,7 +8,7 @@
 <section class="hero-section mb-2">
     <div class="hero-video">
         <video autoplay muted loop playsinline class="background-video">
-            <source src="{{ secure_asset('videos/background.mp4') }}" type="video/mp4">
+            <source src="{{ asset('videos/background.mp4') }}" type="video/mp4">
         </video>
     </div>
     <div class="hero-content text-center">
