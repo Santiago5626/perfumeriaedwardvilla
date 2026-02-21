@@ -47,8 +47,8 @@
                             <div class="offer-info">
                                 <h3 class="offer-title">{{ $offer->product->name }}</h3>
                                 <div class="offer-prices">
-                                    <span class="original-price">${{ number_format($offer->product->price, 2) }}</span>
                                     <span class="final-price">${{ number_format($offer->final_price, 2) }}</span>
+                                    <span class="original-price">${{ number_format($offer->product->price, 2) }}</span>
                                 </div>
                                 <a href="{{ route('products.show', $offer->product) }}" class="btn btn-primary-custom">
                                     Ver Detalles
@@ -83,13 +83,20 @@
             padding: 2rem;
         }
 
+        .swiper-slide {
+            height: auto;
+            display: flex;
+        }
+
         .offer-card {
             background: white;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .offer-card:hover {
@@ -123,29 +130,43 @@
         .offer-info {
             padding: 1.5rem;
             text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .offer-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             color: var(--primary-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.6rem;
         }
 
         .offer-prices {
             margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .final-price {
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 1.8rem;
+            line-height: 1;
         }
 
         .original-price {
             text-decoration: line-through;
             color: var(--medium-gray);
-            margin-right: 1rem;
-        }
-
-        .final-price {
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
         }
 
         /* Estilos para los controles del Swiper */
@@ -257,7 +278,12 @@
                                 <div class="product-category">{{ $product->category->name }}</div>
                                 <h3 class="product-title">{{ $product->name }}</h3>
                                 <div class="product-price">
-                                    <span class="current-price">${{ number_format($product->price, 2) }}</span>
+                                    @if($product->hasActiveOffer())
+                                        <span class="current-price" style="color: var(--gold);">${{ number_format($product->final_price, 2) }}</span>
+                                        <span class="original-price">${{ number_format($product->price, 2) }}</span>
+                                    @else
+                                        <span class="current-price">${{ number_format($product->price, 2) }}</span>
+                                    @endif
                                 </div>
                             </div>
                         </a>
