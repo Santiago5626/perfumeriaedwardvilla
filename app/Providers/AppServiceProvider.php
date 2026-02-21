@@ -43,8 +43,16 @@ class AppServiceProvider extends ServiceProvider
             $view->with('cartCount', $cartCount);
         });
 
-        if(config('app.env') === 'production') {
+        if(config('app.env') !== 'local') {
+            // Forzar esquema HTTPS para todas las URLs generadas
             \Illuminate\Support\Facades\URL::forceScheme('https');
+
+            // Reemplazar APP_URL si viene con http:// para que asset() y url() generen HTTPS
+            $appUrl = config('app.url');
+            if ($appUrl && str_starts_with($appUrl, 'http://')) {
+                $appUrlHttps = 'https://' . substr($appUrl, 7);
+                \Illuminate\Support\Facades\URL::forceRootUrl($appUrlHttps);
+            }
         }
     }
 }
