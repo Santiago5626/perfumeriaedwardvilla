@@ -97,4 +97,24 @@ class Product extends Model
         $offer = $this->activeOffer();
         return $offer ? $offer->discount_percentage : 0;
     }
+
+    /**
+     * Obtiene la URL HTTPS de la imagen del producto.
+     * Si la imagen es una URL externa, fuerza HTTPS.
+     * Si es un nombre de archivo, genera la URL con asset().
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        // Si ya es una URL completa, asegurarse de que use HTTPS
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+            return str_replace('http://', 'https://', $this->image);
+        }
+
+        // Es un nombre de archivo, generar URL de storage
+        return asset('storage/products/' . $this->image);
+    }
 }

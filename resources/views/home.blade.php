@@ -8,7 +8,7 @@
 <section class="hero-section mb-2">
     <div class="hero-video">
         <video autoplay muted loop playsinline class="background-video">
-            <source src="{{ asset('videos/background.mp4') }}" type="video/mp4">
+            <source src="{{ secure_asset('videos/background.mp4') }}" type="video/mp4">
         </video>
     </div>
     <div class="hero-content text-center">
@@ -31,8 +31,8 @@
                     <div class="swiper-slide">
                         <div class="offer-card">
                             <div class="offer-image">
-                                @if($offer->product->image)
-                                    <img src="{{ str_starts_with($offer->product->image, 'http') ? $offer->product->image : asset('storage/products/' . $offer->product->image) }}" 
+                                @if($offer->product->image_url)
+                                    <img src="{{ $offer->product->image_url }}" 
                                          alt="{{ $offer->product->name }}" 
                                          class="product-image">
                                 @else
@@ -264,8 +264,8 @@
                 <div class="col-6 col-md-3">
                     <div class="product-card">
                         <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
-                            @if($product->image)
-                                <img src="{{ str_starts_with($product->image, 'http') ? $product->image : asset('storage/products/' . $product->image) }}" 
+                            @if($product->image_url)
+                                <img src="{{ $product->image_url }}" 
                                      alt="{{ $product->name }}" 
                                      class="product-image">
                             @else
