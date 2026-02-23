@@ -943,7 +943,7 @@
     <!-- WhatsApp Floating Button -->
     <div class="whatsapp-float">
         <div class="whatsapp-text">¿Necesitas ayuda con tu compra?</div>
-        <a href="https://wa.me/573184812707?text=Hola,%20me%20interesa%20conocer%20más%20sobre%20sus%20productos%20de%20Edward%20Villa%20Perfumería" 
+        <a href="https://wa.me/573117013655?text=Hola,%20me%20interesa%20conocer%20más%20sobre%20sus%20productos%20de%20Edward%20Villa%20Perfumería" 
            target="_blank" 
            class="whatsapp-btn"
            title="Contáctanos por WhatsApp">
