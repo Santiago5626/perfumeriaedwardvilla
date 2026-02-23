@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -35,12 +36,14 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories',
             'description' => 'nullable|string|max:500'
         ]);
-
         Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description
         ]);
+
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
 
         return redirect()->route('admin.categorias.index')
                         ->with('success', 'Categoría creada exitosamente.');
@@ -76,12 +79,14 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string|max:500'
         ]);
-
         $category->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'description' => $request->description
         ]);
+
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
 
         return redirect()->route('admin.categorias.index')
                         ->with('success', 'Categoría actualizada exitosamente.');
@@ -99,6 +104,9 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
 
         return redirect()->route('admin.categorias.index')
                         ->with('success', 'Categoría eliminada exitosamente.');

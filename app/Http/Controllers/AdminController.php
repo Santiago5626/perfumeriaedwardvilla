@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class AdminController extends Controller
 {
@@ -112,6 +113,9 @@ class AdminController extends Controller
             'active' => true
         ]);
 
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
+
         // Enviar correos a los suscriptores
         $this->notifySubscribers($offer);
 
@@ -195,6 +199,9 @@ class AdminController extends Controller
             'description' => $request->description
         ]);
 
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
+
         return redirect()->route('admin.offers')->with('success', 'Oferta actualizada exitosamente');
     }
 
@@ -204,6 +211,10 @@ class AdminController extends Controller
     public function deactivateOffer(Offer $offer)
     {
         $offer->update(['active' => false]);
+        
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
+
         return redirect()->route('admin.offers')->with('success', 'Oferta desactivada exitosamente');
     }
 

@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -118,6 +119,9 @@ class ProductController extends Controller
 
         Product::create($validated);
 
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
+
         return redirect()->route('admin.productos.index')
             ->with('success', 'Producto creado exitosamente.');
     }
@@ -191,6 +195,9 @@ class ProductController extends Controller
 
         $product->update($validated);
 
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
+
         return redirect()->route('admin.productos.index')
             ->with('success', 'Producto actualizado exitosamente.');
     }
@@ -208,6 +215,9 @@ class ProductController extends Controller
         }
 
         $product->delete();
+
+        // Limpiar caché de la home
+        Cache::forget('home_datos');
 
         return redirect()->route('admin.productos.index')
             ->with('success', 'Producto eliminado exitosamente.');
