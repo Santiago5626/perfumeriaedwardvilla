@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Providers\AppServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -114,6 +115,9 @@ class CartController extends Controller
             Session::put('cart', $cart);
         }
 
+        // Actualizar el conteo del carrito en sesión para evitar query en cada vista
+        AppServiceProvider::actualizarConteoCarrito();
+
         return back();
     }
 
@@ -164,6 +168,9 @@ class CartController extends Controller
             $newTotal = $product->price * $request->quantity;
         }
 
+        // Actualizar el conteo del carrito en sesión para evitar query en cada vista
+        AppServiceProvider::actualizarConteoCarrito();
+
         if ($request->ajax()) {
             // Calcular nuevo total del carrito
             $cartTotal = $this->getCartTotal();
@@ -205,6 +212,9 @@ class CartController extends Controller
             Session::put('cart', $sessionCart);
         }
 
+        // Actualizar el conteo del carrito en sesión para evitar query en cada vista
+        AppServiceProvider::actualizarConteoCarrito();
+
         if ($request->ajax()) {
             // Calcular nuevo total del carrito
             $cartTotal = $this->getCartTotal();
@@ -233,6 +243,9 @@ class CartController extends Controller
         } else {
             Session::forget('cart');
         }
+
+        // Restablecer el conteo del carrito en sesión
+        AppServiceProvider::actualizarConteoCarrito();
 
         return back();
     }

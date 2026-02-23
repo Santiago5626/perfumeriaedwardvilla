@@ -15,52 +15,57 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Versión temporal sin base de datos para demostración
         try {
-            // Obtener ofertas activas
-            $activeOffers = Offer::with('product')
-                ->where('active', true)
-                ->where('end_date', '>=', now())
-                ->get();
+            // Cachear el contenido de la home por 5 minutos para reducir queries a Supabase
+            $datos = \Illuminate\Support\Facades\Cache::remember('home_datos', 300, function () {
+                // Obtener ofertas activas con su producto relacionado
+                $activeOffers = Offer::with('product')
+                    ->where('active', true)
+                    ->where('end_date', '>=', now())
+                    ->get();
 
-            // Primero obtener productos con descuento
-            $productsWithDiscount = Product::where('active', true)
-                ->whereHas('offers', function($q) {
-                    $q->where('active', true)
-                      ->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now());
-                })
-                ->with(['category', 'offers' => function($q) {
-                    $q->where('active', true)
-                      ->where('start_date', '<=', now())
-                      ->where('end_date', '>=', now());
-                }])
-                ->take(10)
-                ->get();
-
-            // Si hay menos de 10 productos con descuento, obtener productos normales
-            if ($productsWithDiscount->count() < 10) {
-                $remainingCount = 10 - $productsWithDiscount->count();
-                
-                $normalProducts = Product::where('active', true)
-                    ->whereDoesntHave('offers', function($q) {
+                // Primero obtener productos con descuento activo
+                $productsWithDiscount = Product::where('active', true)
+                    ->whereHas('offers', function ($q) {
                         $q->where('active', true)
                           ->where('start_date', '<=', now())
                           ->where('end_date', '>=', now());
                     })
-                    ->with('category')
-                    ->inRandomOrder()
-                    ->take($remainingCount)
+                    ->with(['category', 'offers' => function ($q) {
+                        $q->where('active', true)
+                          ->where('start_date', '<=', now())
+                          ->where('end_date', '>=', now());
+                    }])
+                    ->take(10)
                     ->get();
 
-                $featuredProducts = $productsWithDiscount->concat($normalProducts);
-            } else {
-                $featuredProducts = $productsWithDiscount;
-            }
+                // Si no hay suficientes con descuento, completar con productos recientes
+                // Se usa latest('id') en vez de inRandomOrder() para aprovechar el índice
+                if ($productsWithDiscount->count() < 10) {
+                    $remainingCount = 10 - $productsWithDiscount->count();
 
-            return view('home', compact('activeOffers', 'featuredProducts'));
+                    $normalProducts = Product::where('active', true)
+                        ->whereDoesntHave('offers', function ($q) {
+                            $q->where('active', true)
+                              ->where('start_date', '<=', now())
+                              ->where('end_date', '>=', now());
+                        })
+                        ->with('category')
+                        ->latest('id')
+                        ->take($remainingCount)
+                        ->get();
+
+                    $featuredProducts = $productsWithDiscount->concat($normalProducts);
+                } else {
+                    $featuredProducts = $productsWithDiscount;
+                }
+
+                return compact('activeOffers', 'featuredProducts');
+            });
+
+            return view('home', $datos);
         } catch (\Exception $e) {
-            // Si hay error de base de datos, mostrar página con datos vacíos
+            // Si hay error de base de datos o caché, mostrar página con datos vacíos
             $activeOffers = collect();
             $featuredProducts = collect();
             return view('home', compact('activeOffers', 'featuredProducts'));

@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,18 +29,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('*', function ($view) {
-            $cartCount = 0;
-
-            if (Auth::check()) {
-                // Usuario autenticado - obtener cantidad del carrito de la BD
-                $cartCount = Cart::where('user_id', Auth::id())
-                    ->sum('quantity');
-            } else {
-                // Usuario no autenticado - obtener cantidad del carrito de la sesión
-                $sessionCart = Session::get('cart', []);
-                $cartCount = array_sum($sessionCart);
-            }
-
+            // Leer el conteo del carrito desde la sesión para evitar queries en cada vista.
+            // Se actualiza vía AppServiceProvider::actualizarConteoCarrito() en CartController.
+            $cartCount = Session::get('cart_count', 0);
             $view->with('cartCount', $cartCount);
         });
 
@@ -54,5 +46,21 @@ class AppServiceProvider extends ServiceProvider
                 \Illuminate\Support\Facades\URL::forceRootUrl($appUrlHttps);
             }
         }
+    }
+
+    /**
+     * Recalcula el conteo total del carrito y lo guarda en sesión.
+     * Debe llamarse desde CartController en cada operación que modifique el carrito.
+     */
+    public static function actualizarConteoCarrito(): void
+    {
+        if (Auth::check()) {
+            $total = Cart::where('user_id', Auth::id())->sum('quantity');
+        } else {
+            $sessionCart = Session::get('cart', []);
+            $total = array_sum(array_column($sessionCart, 'quantity') ?: $sessionCart);
+        }
+
+        Session::put('cart_count', (int) $total);
     }
 }
