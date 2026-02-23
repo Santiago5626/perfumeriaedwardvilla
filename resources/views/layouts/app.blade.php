@@ -76,6 +76,9 @@
             color: #000;
             text-decoration: none;
             white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
         }
 
         .navbar-logo:hover {
@@ -779,7 +782,12 @@
                 <!-- Left: Logo & Links -->
                 <div class="navbar-left">
                     <a class="navbar-logo" href="{{ route('home') }}">
-                        <img src="{{ asset('images/logo.png') }}" alt="Edward Villa" style="height: 60px; max-height: 60px; width: auto; object-fit: contain;">
+                        <img src="{{ asset('images/logo.png') }}" 
+                             alt="Edward Villa" 
+                             style="height: 60px; max-height: 60px; width: auto; object-fit: contain; min-width: 150px;"
+                             fetchpriority="high"
+                             decoding="async"
+                             loading="eager">
                     </a>
                     <div class="navbar-links">
                         <a href="{{ route('home') }}" class="nav-link-minimal">Inicio</a>

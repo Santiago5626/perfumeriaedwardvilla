@@ -29,8 +29,8 @@ return new class extends Migration
             $table->index('product_id', 'idx_ofertas_producto');
         });
 
-        // Índice en carts.user_id — usado en conteo y listado del carrito
-        Schema::table('carts', function (Blueprint $table) {
+        // Índice en cart.user_id — usado en conteo y listado del carrito
+        Schema::table('cart', function (Blueprint $table) {
             $table->index('user_id', 'idx_carrito_usuario');
         });
     }
@@ -52,7 +52,7 @@ return new class extends Migration
             $table->dropIndex('idx_ofertas_producto');
         });
 
-        Schema::table('carts', function (Blueprint $table) {
+        Schema::table('cart', function (Blueprint $table) {
             $table->dropIndex('idx_carrito_usuario');
         });
     }
