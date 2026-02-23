@@ -188,9 +188,9 @@
     .auth-container-minimal {
         min-height: calc(100vh - 200px);
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
-        padding: 2rem 1rem;
+        padding: 4rem 1rem;
         background-color: #fff;
     }
 
