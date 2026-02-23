@@ -11,7 +11,7 @@
             <p class="text-muted mb-0">Administra el catálogo de productos de la tienda</p>
         </div>
         <a href="{{ route('admin.productos.create') }}" class="btn btn-primary-custom">
-            <i class="fas fa-plus me-2"></i>Gestión de Productos
+            <i class="fas fa-plus me-2"></i>Nuevo Producto
         </a>
     </div>
 

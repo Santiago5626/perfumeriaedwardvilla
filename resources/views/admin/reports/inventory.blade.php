@@ -6,8 +6,8 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Reporte de Inventario</h1>
-        <a href="{{ route('admin.productos.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Agregar Producto
+        <a href="{{ route('admin.productos.index') }}" class="btn btn-primary">
+            <i class="fas fa-boxes me-2"></i>Gestión de Productos
         </a>
     </div>
 

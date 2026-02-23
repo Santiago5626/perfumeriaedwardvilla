@@ -186,9 +186,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
-                            <a href="{{ route('admin.productos.create') }}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="min-height: 100px;">
-                                <i class="fas fa-plus fa-2x mb-2"></i>
-                                <span>Agregar Producto</span>
+                            <a href="{{ route('admin.productos.index') }}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="min-height: 100px;">
+                                <i class="fas fa-boxes fa-2x mb-2"></i>
+                                <span>Gestión de Productos</span>
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
