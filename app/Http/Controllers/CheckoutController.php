@@ -187,7 +187,6 @@ class CheckoutController extends Controller
                 'shipping' => $shipping,
                 'total' => $total,
                 'first_name' => $validated['first_name'],
-                'last_name' => '', // Ya no se usa apellido
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
                 'address' => $validated['address'],
@@ -221,6 +220,12 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             // Rollback en caso de error
             DB::rollBack();
+            
+            \Log::error('Error al procesar orden: ' . $e->getMessage(), [
+                'exception' => $e,
+                'user_id' => Auth::id(),
+                'cart_items' => $cartItems->pluck('product_id')->toArray() ?? []
+            ]);
 
             return redirect()->back()
                            ->with('error', 'Hubo un error al procesar tu orden. Por favor, intenta nuevamente.')
