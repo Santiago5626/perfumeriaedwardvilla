@@ -157,9 +157,9 @@
                                class="form-control @error('image') is-invalid @enderror" 
                                id="image" 
                                name="image" 
-                               accept="image/*" 
+                               accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/heic,image/heif" 
                                required>
-                        <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</div>
+                        <div class="form-text">Formatos permitidos: JPG, PNG, GIF, WEBP, HEIC. Tamaño máximo: 10MB</div>
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

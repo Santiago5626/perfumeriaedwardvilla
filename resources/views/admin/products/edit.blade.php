@@ -174,9 +174,9 @@
                                class="form-control @error('image') is-invalid @enderror" 
                                id="image" 
                                name="image" 
-                               accept="image/*">
+                               accept="image/jpeg,image/png,image/jpg,image/gif,image/webp,image/heic,image/heif">
                         <div class="form-text">
-                            Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB
+                            Formatos permitidos: JPG, PNG, GIF, WEBP, HEIC. Tamaño máximo: 10MB
                             @if($product->image)
                                 <br>Deja vacío si no deseas cambiar la imagen actual.
                             @endif
