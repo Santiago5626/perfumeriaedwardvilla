@@ -7,7 +7,8 @@
 <!-- Hero Section -->
 <section class="hero-section mb-2">
     <div class="hero-video">
-        <video autoplay muted loop playsinline class="background-video">
+        {{-- preload="none" para no bloquear la carga inicial; JavaScript lo activa en cuanto la pagina esta lista --}}
+        <video id="hero-video" muted loop playsinline preload="none" class="background-video">
             <source src="{{ asset('videos/background.mp4') }}" type="video/mp4">
         </video>
     </div>
@@ -750,5 +751,20 @@
         }
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    // Reproducir el video de fondo DESPUES de que la pagina cargue para no bloquear el renderizado inicial
+    window.addEventListener('load', function () {
+        const video = document.getElementById('hero-video');
+        if (video) {
+            video.load();
+            video.play().catch(function () {
+                // El navegador puede bloquear autoplay sin interaccion; no es critico
+            });
+        }
+    });
+</script>
 @endpush
 @endsection
